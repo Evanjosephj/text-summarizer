@@ -17,7 +17,7 @@ function Home({ theme, addToHistory }) {
     setResult(null)
     setLoading(true)
     try {
-      const response = await fetch('http://localhost:3001/api/summarize', {
+      const response = await fetch('https://text-summarizer-voxm.onrender.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text }),
