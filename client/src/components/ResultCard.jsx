@@ -3,9 +3,9 @@ import { FiFileText, FiList, FiThumbsUp, FiMinus, FiThumbsDown } from 'react-ico
 
 function ResultCard({ result, theme }) {
   const sentimentConfig = {
-    positive: { color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', icon: <FiThumbsUp size={13} /> },
-    neutral:  { color: '#b45309', bg: '#fffbeb', border: '#fde68a', icon: <FiMinus size={13} /> },
-    negative: { color: '#dc2626', bg: '#fef2f2', border: '#fecaca', icon: <FiThumbsDown size={13} /> },
+    positive: { color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', icon: <FiThumbsUp size={14} /> },
+    neutral:  { color: '#b45309', bg: '#fffbeb', border: '#fde68a', icon: <FiMinus size={14} /> },
+    negative: { color: '#dc2626', bg: '#fef2f2', border: '#fecaca', icon: <FiThumbsDown size={14} /> },
   }
 
   const s = sentimentConfig[result.sentiment] || sentimentConfig.neutral
@@ -25,7 +25,7 @@ function ResultCard({ result, theme }) {
 
         <div style={{ ...styles.metricCard, backgroundColor: theme.metricBg, border: `1px solid ${theme.border}`, gridColumn: 'span 2' }}>
           <p style={{ ...styles.metricLabel, color: theme.muted }}>
-            <FiFileText size={12} style={{ marginRight: '5px' }} /> Summary
+            <FiFileText size={13} style={{ marginRight: '5px' }} /> Summary
           </p>
           <p style={{ ...styles.summaryText, color: theme.text }}>{result.summary}</p>
         </div>
@@ -33,7 +33,7 @@ function ResultCard({ result, theme }) {
 
       <div style={{ ...styles.keyPointsCard, backgroundColor: theme.cardBg, border: `1px solid ${theme.border}` }}>
         <p style={{ ...styles.keyPointsTitle, color: theme.text }}>
-          <FiList size={14} style={{ marginRight: '6px' }} />
+          <FiList size={15} style={{ marginRight: '6px' }} />
           Key points
         </p>
         <div style={styles.pointsList}>
@@ -62,11 +62,11 @@ const styles = {
   },
   metricCard: {
     borderRadius: '10px',
-    padding: '12px 14px',
+    padding: '14px 16px',
   },
   metricLabel: {
-    margin: '0 0 6px',
-    fontSize: '11px',
+    margin: '0 0 8px',
+    fontSize: '13px',
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
     display: 'flex',
@@ -75,42 +75,42 @@ const styles = {
   badge: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '4px',
-    padding: '3px 10px',
+    gap: '5px',
+    padding: '5px 14px',
     borderRadius: '20px',
-    fontSize: '13px',
+    fontSize: '14px',
     fontWeight: '500',
   },
   summaryText: {
     margin: 0,
-    fontSize: '13px',
-    lineHeight: '1.6',
+    fontSize: '15px',
+    lineHeight: '1.7',
   },
   keyPointsCard: {
     borderRadius: '12px',
-    padding: '14px 16px',
+    padding: '16px 18px',
   },
   keyPointsTitle: {
-    margin: '0 0 12px',
-    fontSize: '13px',
+    margin: '0 0 14px',
+    fontSize: '15px',
     fontWeight: '500',
     display: 'flex',
     alignItems: 'center',
   },
-  pointsList: { display: 'flex', flexDirection: 'column', gap: '10px' },
+  pointsList: { display: 'flex', flexDirection: 'column', gap: '12px' },
   pointRow: { display: 'flex', alignItems: 'flex-start', gap: '10px' },
   pointNumber: {
-    width: '20px',
-    height: '20px',
-    minWidth: '20px',
+    width: '22px',
+    height: '22px',
+    minWidth: '22px',
     borderRadius: '50%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '11px',
+    fontSize: '12px',
     fontWeight: '500',
   },
-  pointText: { margin: 0, fontSize: '13px', lineHeight: '1.6' },
+  pointText: { margin: 0, fontSize: '15px', lineHeight: '1.7' },
 }
 
 export default ResultCard

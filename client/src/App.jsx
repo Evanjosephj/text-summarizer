@@ -1,224 +1,240 @@
 import React, { useState } from 'react'
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { GiBrain } from 'react-icons/gi'
-import { FiSend, FiSun, FiMoon } from 'react-icons/fi'
-import ResultCard from './components/ResultCard'
+import { FiSun, FiMoon, FiClock, FiHome } from 'react-icons/fi'
+import Home from './pages/Home.jsx'
+import History from './pages/History.jsx'
 
 function App() {
-  const [text, setText] = useState('')
-  const [result, setResult] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [dark, setDark] = useState(false)
+  const [dark, setDark] = useState(true)
+  const [history, setHistory] = useState([])
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const theme = dark ? darkTheme : lightTheme
 
-  const handleSubmit = async () => {
-    if (!text.trim()) {
-      setError('Please enter some text to summarize.')
-      return
-    }
-    setError('')
-    setResult(null)
-    setLoading(true)
-    try {
-      const response = await fetch('http://localhost:3001/api/summarize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-      })
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Something went wrong.')
-      setResult(data)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
+  const addToHistory = (entry) => {
+    setHistory(prev => [entry, ...prev])
   }
 
   return (
     <div style={{ ...styles.page, backgroundColor: theme.pageBg }}>
-      <div style={{ ...styles.container, backgroundColor: theme.cardBg, border: `1px solid ${theme.border}` }}>
+      <div style={styles.container}>
 
-        <div style={styles.header}>
-          <div style={{ ...styles.iconBox, backgroundColor: theme.iconBg }}>
-            <GiBrain size={22} color={theme.iconColor} />
+        <nav style={{ ...styles.nav, borderBottom: `1px solid ${theme.border}` }}>
+          <div style={styles.navLeft}>
+            <div style={styles.logoIcon}>
+              <GiBrain size={20} color='#a855f7' />
+            </div>
+            <span style={styles.logoText}>text<span style={styles.logoAccent}>summarizer</span></span>
           </div>
-          <div>
-            <h1 style={{ ...styles.title, color: theme.text }}>Text Summarizer</h1>
-            <p style={{ ...styles.powered, color: theme.muted }}>Powered by Groq AI</p>
+          <div style={styles.navRight}>
+            <button
+              onClick={() => navigate(location.pathname === '/' ? '/history' : '/')}
+              style={{ ...styles.navBtn, color: theme.muted, border: `1px solid ${theme.border}` }}
+            >
+              {location.pathname === '/' ? <><FiClock size={14} /> History</> : <><FiHome size={14} /> Home</>}
+            </button>
+            <button
+              onClick={() => setDark(!dark)}
+              style={{ ...styles.navBtn, color: theme.muted, border: `1px solid ${theme.border}` }}
+            >
+              {dark ? <FiSun size={14} /> : <FiMoon size={14} />}
+            </button>
           </div>
-          <button
-            onClick={() => setDark(!dark)}
-            style={{ ...styles.toggleBtn, backgroundColor: theme.toggleBg, color: theme.text, border: `1px solid ${theme.border}`, marginLeft: 'auto' }}
-          >
-            {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
-            {dark ? 'Light' : 'Dark'}
-          </button>
+        </nav>
+
+        {location.pathname === '/' && (
+          <div style={styles.hero}>
+            <div style={styles.badge}>
+              <span style={styles.badgeDot} />
+              AI POWERED
+            </div>
+            <h1 style={styles.heroTitle}>
+              Summarize
+              <span style={styles.heroGradient}> anything.</span>
+            </h1>
+            <p style={{ ...styles.heroSub, color: theme.muted }}>
+              Paste any text and get a clean structured summary 
+            </p>
+          </div>
+        )}
+
+        {location.pathname === '/history' && (
+          <div style={styles.hero}>
+            <h1 style={{ ...styles.heroTitle, fontSize: '40px' }}>
+              Your <span style={styles.heroGradient}>History</span>
+            </h1>
+            <p style={{ ...styles.heroSub, color: theme.muted }}>
+              All your previous summaries in one place
+            </p>
+          </div>
+        )}
+
+        <div style={{ ...styles.card, backgroundColor: theme.cardBg, border: `1px solid ${theme.border}` }}>
+          <Routes>
+            <Route path="/" element={<Home theme={theme} addToHistory={addToHistory} />} />
+            <Route path="/history" element={<History theme={theme} history={history} />} />
+          </Routes>
         </div>
 
-        <div style={{ ...styles.divider, backgroundColor: theme.border }} />
-
-        <label style={{ ...styles.label, color: theme.muted }}>Paste your text</label>
-        <textarea
-          style={{
-            ...styles.textarea,
-            backgroundColor: theme.inputBg,
-            border: `1px solid ${theme.border}`,
-            color: theme.text,
-          }}
-          placeholder="Paste any article, paragraph, or notes here..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          rows={7}
-        />
-
-        {error && <p style={styles.error}>{error}</p>}
-
-        <div style={styles.buttonRow}>
-          <button
-            style={{
-              ...styles.button,
-              backgroundColor: theme.buttonBg,
-              color: theme.buttonText,
-              border: `1px solid ${theme.border}`,
-            }}
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            <FiSend size={14} />
-            {loading ? 'Analyzing...' : 'Summarize'}
-          </button>
-        </div>
-
-        {result && <ResultCard result={result} theme={theme} dark={dark} />}
+        <footer style={{ ...styles.footer, color: theme.muted, borderTop: `1px solid ${theme.border}` }}>
+          Built with React + Groq AI
+        </footer>
       </div>
     </div>
   )
 }
 
 const lightTheme = {
-  pageBg: '#f0f4f8',
-  cardBg: '#ffffff',
-  border: '#e2e8f0',
-  text: '#1a202c',
-  muted: '#718096',
-  inputBg: '#f7fafc',
-  iconBg: '#ebf8ff',
-  iconColor: '#2b6cb0',
-  toggleBg: '#edf2f7',
-  buttonBg: '#ffffff',
-  buttonText: '#1a202c',
-  metricBg: '#f7fafc',
-  pointNumBg: '#ebf8ff',
-  pointNumColor: '#2b6cb0',
+  pageBg: '#13001a',
+  cardBg: '#1a0525',
+  border: '#2d1040',
+  text: '#e8d5ff',
+  muted: '#9870bb',
+  inputBg: '#0f0018',
+  iconBg: '#2d1040',
+  iconColor: '#c084fc',
+  toggleBg: '#2d1040',
+  buttonBg: '#2d1040',
+  buttonText: '#e8d5ff',
+  metricBg: '#0f0018',
+  pointNumBg: '#2d1040',
+  pointNumColor: '#c084fc',
+  emptyBg: '#0f0018',
 }
 
 const darkTheme = {
-  pageBg: '#0f172a',
-  cardBg: '#1e293b',
-  border: '#334155',
-  text: '#e2e8f0',
-  muted: '#94a3b8',
-  inputBg: '#0f172a',
-  iconBg: '#1e3a5f',
-  iconColor: '#93c5fd',
-  toggleBg: '#334155',
-  buttonBg: '#334155',
-  buttonText: '#e2e8f0',
-  metricBg: '#0f172a',
-  pointNumBg: '#1e3a5f',
-  pointNumColor: '#93c5fd',
+  pageBg: '#0a0a0f',
+  cardBg: '#12121a',
+  border: '#1e1e2e',
+  text: '#e8e0ff',
+  muted: '#6b6580',
+  inputBg: '#0d0d15',
+  iconBg: '#1a1030',
+  iconColor: '#a855f7',
+  toggleBg: '#1a1a28',
+  buttonBg: '#1a1a28',
+  buttonText: '#e8e0ff',
+  metricBg: '#0d0d15',
+  pointNumBg: '#1a1030',
+  pointNumColor: '#a855f7',
+  emptyBg: '#0d0d15',
 }
 
 const styles = {
   page: {
     minHeight: '100vh',
-    padding: '40px 16px',
-    fontFamily: 'system-ui, sans-serif',
+    fontFamily: "'Inter', system-ui, sans-serif",
     transition: 'background-color 0.3s ease',
   },
   container: {
-    maxWidth: '680px',
+    maxWidth: '740px',
     margin: '0 auto',
+    padding: '0 20px 60px',
+  },
+  nav: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '20px 0',
+    marginBottom: '10px',
+  },
+  navLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+  },
+  logoIcon: {
+    width: '36px',
+    height: '36px',
+    borderRadius: '10px',
+    background: 'linear-gradient(135deg, #1a1030, #2d1b4e)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '1px solid #3d2060',
+  },
+  logoText: {
+    fontSize: '18px',
+    fontWeight: '700',
+    color: '#e8e0ff',
+    letterSpacing: '-0.5px',
+  },
+  logoAccent: {
+    color: '#a855f7',
+  },
+  navRight: {
+    display: 'flex',
+    gap: '8px',
+  },
+  navBtn: {
+    padding: '7px 14px',
+    borderRadius: '8px',
+    fontSize: '13px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    fontWeight: '500',
+    backgroundColor: 'transparent',
+    transition: 'all 0.2s ease',
+  },
+  hero: {
+    padding: '48px 0 36px',
+  },
+  badge: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    backgroundColor: '#1a1030',
+    border: '1px solid #3d2060',
+    borderRadius: '20px',
+    padding: '5px 14px',
+    fontSize: '11px',
+    fontWeight: '600',
+    color: '#a855f7',
+    letterSpacing: '0.08em',
+    marginBottom: '20px',
+  },
+  badgeDot: {
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%',
+    backgroundColor: '#a855f7',
+    display: 'inline-block',
+    boxShadow: '0 0 6px #a855f7',
+  },
+  heroTitle: {
+    fontSize: '52px',
+    fontWeight: '800',
+    color: '#e8e0ff',
+    margin: '0 0 16px',
+    lineHeight: '1.1',
+    letterSpacing: '-1px',
+  },
+  heroGradient: {
+    background: 'linear-gradient(135deg, #a855f7, #ec4899)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text',
+  },
+  heroSub: {
+    fontSize: '16px',
+    lineHeight: '1.6',
+    margin: 0,
+    maxWidth: '480px',
+  },
+  card: {
     borderRadius: '16px',
     padding: '28px 32px',
     transition: 'all 0.3s ease',
   },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    marginBottom: '6px',
-  },
-  iconBox: {
-    width: '40px',
-    height: '40px',
-    borderRadius: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    margin: 0,
-    fontSize: '20px',
-    fontWeight: '600',
-  },
-  powered: {
-    margin: 0,
-    fontSize: '12px',
-  },
-  toggleBtn: {
-    padding: '6px 14px',
-    borderRadius: '8px',
+  footer: {
+    textAlign: 'center',
     fontSize: '13px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    fontWeight: '500',
-  },
-  divider: {
-    height: '1px',
-    margin: '20px 0',
-  },
-  label: {
-    fontSize: '13px',
-    display: 'block',
-    marginBottom: '6px',
-  },
-  textarea: {
-    width: '100%',
-    boxSizing: 'border-box',
-    padding: '12px',
-    borderRadius: '10px',
-    fontSize: '14px',
-    resize: 'vertical',
-    outline: 'none',
-    fontFamily: 'system-ui, sans-serif',
-    lineHeight: '1.6',
-    transition: 'all 0.3s ease',
-  },
-  buttonRow: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    marginTop: '10px',
-  },
-  button: {
-    padding: '8px 20px',
-    borderRadius: '8px',
-    fontSize: '14px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    fontWeight: '500',
-    transition: 'all 0.3s ease',
-  },
-  error: {
-    color: '#dc2626',
-    fontSize: '13px',
-    marginTop: '8px',
+    padding: '24px 0 0',
+    marginTop: '24px',
   },
 }
 
