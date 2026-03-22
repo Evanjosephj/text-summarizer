@@ -74,7 +74,10 @@ function App() {
         <div style={{ ...styles.card, backgroundColor: theme.cardBg, border: `1px solid ${theme.border}` }}>
           <Routes>
             <Route path="/" element={<Home theme={theme} addToHistory={addToHistory} />} />
-            <Route path="/history" element={<History theme={theme} history={history} />} />
+            <Route path="/history" element={<History theme={theme} history={history} onDelete={(i) => {
+  if (i === 'all') setHistory([])
+  else setHistory(prev => prev.filter((_, idx) => idx !== i))
+}} />} />
           </Routes>
         </div>
 

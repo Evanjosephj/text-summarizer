@@ -1,7 +1,7 @@
 import React from 'react'
-import { FiClock, FiFileText, FiThumbsUp, FiMinus, FiThumbsDown } from 'react-icons/fi'
+import { FiFileText, FiThumbsUp, FiMinus, FiThumbsDown, FiTrash2 } from 'react-icons/fi'
 
-function History({ theme, history }) {
+function History({ theme, history, onDelete }) {
   const sentimentConfig = {
     positive: { color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', icon: <FiThumbsUp size={11} /> },
     neutral:  { color: '#b45309', bg: '#fffbeb', border: '#fde68a', icon: <FiMinus size={11} /> },
@@ -11,7 +11,7 @@ function History({ theme, history }) {
   if (history.length === 0) {
     return (
       <div style={{ ...styles.empty, backgroundColor: theme.emptyBg, border: `1px solid ${theme.border}` }}>
-        <FiClock size={32} color={theme.muted} />
+        <FiFileText size={32} color={theme.muted} />
         <p style={{ color: theme.muted, marginTop: '12px', fontSize: '14px' }}>
           No history yet. Summarize some text first!
         </p>
@@ -21,9 +21,18 @@ function History({ theme, history }) {
 
   return (
     <div style={styles.wrapper}>
-      <p style={{ color: theme.muted, fontSize: '13px', marginBottom: '16px' }}>
-        {history.length} summarized {history.length === 1 ? 'entry' : 'entries'}
-      </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <p style={{ color: theme.muted, fontSize: '13px', margin: 0 }}>
+          {history.length} summarized {history.length === 1 ? 'entry' : 'entries'}
+        </p>
+        <button
+          onClick={() => onDelete('all')}
+          style={{ ...styles.deleteAllBtn, color: '#dc2626', border: '1px solid #fecaca', backgroundColor: theme.metricBg }}
+        >
+          <FiTrash2 size={13} /> Clear all
+        </button>
+      </div>
+
       {history.map((entry, i) => {
         const s = sentimentConfig[entry.result.sentiment] || sentimentConfig.neutral
         return (
@@ -40,15 +49,23 @@ function History({ theme, history }) {
                 <FiFileText size={13} color={theme.muted} />
                 <p style={{ ...styles.inputPreview, color: theme.muted }}>{entry.text}</p>
               </div>
-              <span style={{
-                ...styles.badge,
-                color: s.color,
-                backgroundColor: s.bg,
-                border: `1px solid ${s.border}`,
-              }}>
-                {s.icon}
-                {entry.result.sentiment}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{
+                  ...styles.badge,
+                  color: s.color,
+                  backgroundColor: s.bg,
+                  border: `1px solid ${s.border}`,
+                }}>
+                  {s.icon}
+                  {entry.result.sentiment}
+                </span>
+                <button
+                  onClick={() => onDelete(i)}
+                  style={{ ...styles.deleteBtn, color: '#dc2626' }}
+                >
+                  <FiTrash2 size={14} />
+                </button>
+              </div>
             </div>
 
             <p style={{ ...styles.summary, color: theme.text }}>{entry.result.summary}</p>
@@ -109,7 +126,7 @@ const styles = {
   },
   inputPreview: {
     margin: 0,
-    fontSize: '13px',
+    fontSize: '12px',
     lineHeight: '1.5',
   },
   badge: {
@@ -122,9 +139,27 @@ const styles = {
     fontWeight: '500',
     whiteSpace: 'nowrap',
   },
+  deleteBtn: {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '2px',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  deleteAllBtn: {
+    padding: '6px 12px',
+    borderRadius: '8px',
+    fontSize: '12px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+    fontWeight: '500',
+  },
   summary: {
     margin: '0 0 10px',
-    fontSize: '13px',
+    fontSize: '14px',
     lineHeight: '1.6',
     fontWeight: '500',
   },
@@ -147,12 +182,12 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '13px',
+    fontSize: '10px',
     fontWeight: '500',
   },
   pointText: {
     margin: 0,
-    fontSize: '15px',
+    fontSize: '13px',
     lineHeight: '1.5',
   },
   date: {
