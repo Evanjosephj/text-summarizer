@@ -17,7 +17,7 @@ function Home({ theme, addToHistory }) {
     setResult(null)
     setLoading(true)
     try {
-      const response = await fetch('https://text-summarizer-voxm.onrender.com', {
+      const response = await fetch('https://text-summarizer-voxm.onrender.com/api/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text }),
@@ -98,20 +98,20 @@ function Home({ theme, addToHistory }) {
 
 const styles = {
   label: {
-    fontSize: '13px',
+    fontSize: '14px',
     display: 'block',
     marginBottom: '6px',
   },
   textarea: {
     width: '100%',
     boxSizing: 'border-box',
-    padding: '12px',
+    padding: '14px',
     borderRadius: '10px',
-    fontSize: '14px',
+    fontSize: '15px',
     resize: 'vertical',
     outline: 'none',
     fontFamily: 'system-ui, sans-serif',
-    lineHeight: '1.6',
+    lineHeight: '1.7',
     transition: 'all 0.3s ease',
   },
   buttonRow: {
@@ -121,9 +121,9 @@ const styles = {
     marginTop: '10px',
   },
   button: {
-    padding: '8px 20px',
+    padding: '10px 22px',
     borderRadius: '8px',
-    fontSize: '14px',
+    fontSize: '15px',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
@@ -131,9 +131,9 @@ const styles = {
     fontWeight: '500',
   },
   clearBtn: {
-    padding: '8px 16px',
+    padding: '10px 18px',
     borderRadius: '8px',
-    fontSize: '14px',
+    fontSize: '15px',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
